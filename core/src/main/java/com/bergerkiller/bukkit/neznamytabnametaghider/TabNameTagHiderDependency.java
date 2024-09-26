@@ -15,14 +15,23 @@ public class TabNameTagHiderDependency extends SoftDependency<TabNameTagHider> {
 
     @Override
     protected TabNameTagHider initialize(Plugin plugin) throws Error, Exception {
-        Class.forName("me.neznamy.tab.api.TabAPI");
+        ClassLoader loader = plugin.getClass().getClassLoader();
 
-        try {
-            Class.forName("me.neznamy.tab.api.nametag.NameTagManager");
-            return create_4_0_3();
-        } catch (Throwable t) { /* Old version? */ }
+        Class.forName("me.neznamy.tab.api.TabAPI", false, loader);
 
-        return create_3_1_4();
+        // Up until this was moved to the NameTagManager class
+        {
+            boolean hasNameTagManager = false;
+            try {
+                Class.forName("me.neznamy.tab.api.nametag.NameTagManager", false, loader);
+                hasNameTagManager = true;
+            } catch (Throwable t) { /* Old version */ }
+            if (!hasNameTagManager) {
+                return create_3_1_4();
+            }
+        }
+
+        return create_4_0_3();
     }
 
     private static TabNameTagHider create_4_0_3() {
